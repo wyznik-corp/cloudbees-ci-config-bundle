@@ -1,19 +1,17 @@
+notificationConfiguration:
+  enabled: true
+  router: "operationsCenter"
 jenkins:
-  globalNodeProperties:
-  - envVars:
-      env:
-      - key: "BUNDLE_ID"
-        value: "${CASC_BUNDLE_ID}"
+  authorizationStrategy: "cloudBeesRoleBasedAccessControl"
   quietPeriod: 0
-  systemMessage: 'Jenkins configured using CloudBees CI CasC - v1'
+  systemMessage: 'Jenkins configured using CloudBees CI CasC'
 globalCloudBeesPipelineTemplateCatalog:
   catalogs:
   - branchOrTag: "main"
     scm:
       github:
         configuredByUrl: true
-        credentialsId: "cloudbees-ci-workshop-github-app"
-        id: "workshop-catalog"
+        credentialsId: "cloudbees-ci-pipeline-workshop-github-app"
         repoOwner: "${GITHUB_ORGANIZATION}"
         repository: "pipeline-template-catalog"
         repositoryUrl: "https://github.com/${GITHUB_ORGANIZATION}/pipeline-template-catalog.git"
@@ -26,9 +24,6 @@ globalCloudBeesPipelineTemplateCatalog:
             strategyId: 1
             trust: "gitHubTrustPermissions"
     updateInterval: "1d"
-notificationConfiguration:
-  enabled: true
-  router: "operationsCenter"
 unclassified:
   hibernationConfiguration:
     activities:
@@ -51,14 +46,36 @@ unclassified:
         modernSCM:
           scm:
             github:
-              credentialsId: "cloudbees-ci-workshop-github-app"
+              credentialsId: "cloudbees-ci-pipeline-workshop-github-app"
               repoOwner: "${GITHUB_ORGANIZATION}"
               repository: "pipeline-library"
   headerLabel:
     text: "${GITHUB_APP}"
+kube:
+  podTemplatesConfiguration:
+    templates:
+    - containers:
+      - name: "nodejs"
+        command: "sleep"
+        args: "99d"
+        image: "us-east1-docker.pkg.dev/core-workshop/workshop-registry/node:14-alpine"
+        livenessProbe:
+          failureThreshold: 0
+          initialDelaySeconds: 0
+          periodSeconds: 0
+          successThreshold: 0
+          timeoutSeconds: 0
+        workingDir: "/home/jenkins/agent"
+      hostNetwork: false
+      idleMinutes: 30
+      idleMinutesStr: "30"
+      label: "nodejs-app"
+      name: "nodejs-app"
+      podRetention: "always"
+      yamlMergeStrategy: "override"
 credentials:
   system:
-    domainCredentials:
+    domainCredentials: 
     - credentials:
       - string:
           description: "CasC Update Secret"
@@ -66,17 +83,28 @@ credentials:
           scope: GLOBAL
           secret: "${cbciCascWorkshopControllerProvisionSecret}"
       - string:
+          description: "Feature Management Key"
+          id: "fm-key"
+          scope: GLOBAL
+          secret: "${cbciPipelineWorkshopFmKey}"
+      - string:
           description: "Webhook secret for CloudBees CI Workshop GitHub App"
           id: "cloudbees-ci-workshop-github-webhook-secret"
           scope: SYSTEM
           secret: "${gitHubWebhookSecret}"
       - gitHubApp:
           apiUri: "https://api.github.com"
-          appID: "${GITHUB_APP_ID}"
-          description: "CloudBees CI Workshop GitHub App credential"
-          id: "cloudbees-ci-workshop-github-app"
+          appID: "103013"
+          description: "CloudBees CI Pipeline Workshop GitHub App credential"
+          id: "cloudbees-ci-pipeline-workshop-github-app"
           owner: "${GITHUB_ORGANIZATION}"
-          privateKey: "${gitHubAppPrivateKey}"
+          privateKey: "${cbciPipelineWorkshopGitHubAppPrivateKey}"
+      - usernamePassword:
+          description: "Example Service Username/Password Credential"
+          id: "example-service-username-password"
+          password: "${cbciWorkshopExampleCredentialServicePassword}"
+          scope: GLOBAL
+          username: "service_user"
       - usernamePassword:
           password: "${userApiToken}"
           description: description:api-token

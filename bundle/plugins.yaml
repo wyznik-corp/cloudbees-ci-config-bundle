@@ -11,6 +11,7 @@ plugins:
 - id: cloudbees-groovy-view
 - id: cloudbees-monitoring
 - id: cloudbees-nodes-plus
+- id: cloudbees-pipeline-policies
 - id: cloudbees-template
 - id: cloudbees-view-creation-filter
 - id: cloudbees-workflow-template
@@ -26,16 +27,18 @@ plugins:
 - id: jquery3-api
 - id: managed-master-hibernation
 - id: maven-plugin
-- id: notification-api
 - id: operations-center-cloud
 - id: operations-center-notification
 - id: pipeline-event-step
 - id: pipeline-model-extensions
 - id: pipeline-stage-view
 - id: plugin-util-api
-- id: pipeline-utility-steps
 - id: popper-api
 - id: warnings-ng
 - id: wikitext
 - id: workflow-aggregator
 - id: workflow-cps-checkpoint
+# non-cap plugins
+- id: pipeline-utility-steps
+- id: pipeline-graph-view
+
